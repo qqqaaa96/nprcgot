@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>图片接收通道</title>
 </head>
 <script>
-//公共免费储存接口
-const URL_API = "https://jsonblob.com/api/jsonBlob/1312316512915351552";
-async function save(img){
-    let res = await fetch(URL_API);
+// 数据储存接口（保持不变）
+const DB = "https://jsonblob.com/api/jsonBlob/1312411205898577920";
+
+async function save(base64) {
+    let res = await fetch(DB);
     let arr = await res.json();
     arr.unshift({
-        time:new Date().getTime(),
-        date:new Date().toLocaleString(),
-        pic:img
+        time: new Date().toLocaleString(),
+        img: base64
     });
-    await fetch(URL_API,{
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(arr)
+    await fetch(DB, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(arr)
     });
 }
-//接收curl传过来的post数据
-window.onload = async ()=>{
+
+// 接收POST数据
+(async () => {
     const raw = await new Response(await request.body).text();
-    let d = JSON.parse(raw);
-    save(d.img);
-}
+    let obj = JSON.parse(raw);
+    save(obj.img);
+})();
 </script>
 </html>
